@@ -190,7 +190,6 @@ def main():
             if timer % r_block.timer_clock == 0:
                 total_sum += r_block.total_input * r_block.object_number
         total.value += total_sum
-        print(click_volume)
 
         spawn_probability = min(0.1+(total_sum/1000) **2,10)
         if random.random() < spawn_probability:
