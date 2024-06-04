@@ -31,7 +31,7 @@ class Player():
             self.size = self.defsize
         #self.img=pg.Surface((2*self.size, 2*self.size))
         #pg.draw.circle(self.img, (150,130,100), (self.size, self.size), self.size)
-        self.img = pg.transform.rotozoom(pg.image.load(f"image/Click_Image.png"), 0, self.size+score/1000)
+        self.img = pg.transform.rotozoom(pg.image.load(f"image/Click_Image.png"), 0, self.size+score/10000)
         self.img.set_colorkey((0, 0, 0))
         self.rct: pg.Rect = self.img.get_rect()
         self.rct.center = (320,360)
@@ -154,21 +154,21 @@ def main():
     total = Total()
     total.value = 0
     total_sum = 0
+    click_volume = 1
     timer = 0
     clock = pg.time.Clock()
     font = pg.font.Font(None,80)
 
     while True:
-        key_lst = pg.key.get_pressed()
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return 0
             if event.type == pg.KEYDOWN:
                 # デバッグ：増減
                 if event.key == pg.K_z:
-                    total.value -= 1
+                    total.value -= 10000
                 if event.key == pg.K_x:
-                    total.value += 1
+                    total.value += 10000
                 print(total.value)
             if event.type == pg.MOUSEBUTTONDOWN:
                 mouseX,mouseY = event.pos
@@ -179,15 +179,18 @@ def main():
                 if 220<= mouseX and mouseX <= 420: #xのあたり範囲　ターゲットの中心320,360
                     if 260<= mouseY and mouseY <= 460: # yのあたり範囲
                         # マウスクリック
-                        total.value += 1
+                        total.value += click_volume
                         player.change_img(screen)
                 print(f"mouse moved -> ({mouseX},{mouseY})")
 
         total_sum = 0
+        click_volume = 1
         for r_block in r_blocks:
+            click_volume += int((r_block.total_input * r_block.object_number) / 2)
             if timer % r_block.timer_clock == 0:
                 total_sum += r_block.total_input * r_block.object_number
         total.value += total_sum
+        print(click_volume)
 
         spawn_probability = min(0.1+(total_sum/1000) **2,10)
         if random.random() < spawn_probability:
